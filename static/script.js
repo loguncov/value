@@ -6,7 +6,7 @@ let portfolioData = [
   { ticker:'SIBN','name':'Газпром нефть','currentPrice':506.05,'buyZone':{'min':480,'max':550},'fairZone':{'min':530,'max':680},'sellZone':{'min':650,'max':720},'avgPrice':null },
   { ticker:'SBER','name':'Сбербанк','currentPrice':304.22,'buyZone':{'min':290,'max':330},'fairZone':{'min':320,'max':420},'sellZone':{'min':400,'max':450},'avgPrice':null },
   { ticker:'CHMF','name':'Северсталь','currentPrice':996.4,'buyZone':{'min':950,'max':1080},'fairZone':{'min':1050,'max':1350},'sellZone':{'min':1300,'max':1450},'avgPrice':null },
-  { ticker:'PLZL','name':'Полюс','currentPrice':1966.4,'buyZone':{'min':1850,'max':2050},'fairZone':{'min':2000,'max':2450},'sellZone':{'min':2400,'max':2600},'avgPrice':null },
+  { ticker:'PLZL','name':'Полюс','currentPrice':10000.4,'buyZone':{'min':1850,'max':2050},'fairZone':{'min':2000,'max':2450},'sellZone':{'min':2400,'max':2600},'avgPrice':null },
   { ticker:'ROSN','name':'Роснефть','currentPrice':416.85,'buyZone':{'min':400,'max':470},'fairZone':{'min':450,'max':550},'sellZone':{'min':520,'max':580},'avgPrice':null },
   { ticker:'PHOR','name':'ФосАгро','currentPrice':6485,'buyZone':{'min':6200,'max':6700},'fairZone':{'min':6600,'max':7600},'sellZone':{'min':7500,'max':8000},'avgPrice':null },
   { ticker:'RAGR','name':'РусАгро','currentPrice':104.74,'buyZone':{'min':100,'max':125},'fairZone':{'min':120,'max':150},'sellZone':{'min':145,'max':170},'avgPrice':null }
@@ -51,50 +51,60 @@ function updateTable(){
 }
 
 function renderChart(){
-  const labels=portfolioData.map(s=>s.ticker);
-  const buyMax=portfolioData.map(s=>s.buyZone.max);
-  const buyMin=portfolioData.map(s=>s.buyZone.min);
-  const fairMax=portfolioData.map(s=>s.fairZone.max);
-  const fairMin=portfolioData.map(s=>s.fairZone.min);
-  const sellMax=portfolioData.map(s=>s.sellZone.max);
-  const sellMin=portfolioData.map(s=>s.sellZone.min);
-  const current=portfolioData.map(s=>s.currentPrice);
-  const avg=portfolioData.map(s=>s.avgPrice);
+  const labels = portfolioData.map(s => s.ticker);
+  const buyMin  = portfolioData.map(s => s.buyZone.min);
+  const buyMax  = portfolioData.map(s => s.buyZone.max);
+  const fairMin = portfolioData.map(s => s.fairZone.min);
+  const fairMax = portfolioData.map(s => s.fairZone.max);
+  const sellMin = portfolioData.map(s => s.sellZone.min);
+  const sellMax = portfolioData.map(s => s.sellZone.max);
+  const current = portfolioData.map(s => s.currentPrice);
+  const avg     = portfolioData.map(s => s.avgPrice);
 
-  if(chart){ chart.destroy(); chart=null; }
-  const ctx=document.getElementById('zonesChart').getContext('2d');
-  chart=new Chart(ctx,{
-    data:{
+  if(chart){ chart.destroy(); chart = null; }
+  const ctx = document.getElementById('zonesChart').getContext('2d');
+
+  chart = new Chart(ctx, {
+    data: {
       labels,
-      datasets:[
-        { type:'bar', label:'Зона покупки', data:buyMax, backgroundColor:'rgba(72,187,120,0.6)', stack:'zones' },
-        { type:'bar', label:'', data:buyMax.map((v,i)=>v-buyMin[i]), backgroundColor:'rgba(72,187,120,0.3)', stack:'zones' },
-        { type:'bar', label:'Справедливая стоимость', data:fairMax, backgroundColor:'rgba(237,137,54,0.6)', stack:'zones' },
-        { type:'bar', label:'', data:fairMax.map((v,i)=>v-fairMin[i]), backgroundColor:'rgba(237,137,54,0.3)', stack:'zones' },
-        { type:'bar', label:'Зона фиксации', data:sellMax, backgroundColor:'rgba(229,62,62,0.6)', stack:'zones' },
-        { type:'bar', label:'', data:sellMax.map((v,i)=>v-sellMin[i]), backgroundColor:'rgba(229,62,62,0.3)', stack:'zones' },
-        { type:'scatter', label:'Текущая цена', data:labels.map((_,i)=>({x:current[i],y:i})), backgroundColor:'#3182ce', pointRadius:6 },
-        { type:'scatter', label:'Средняя цена', data:labels.map((_,i)=>avg[i]!=null?{x:avg[i],y:i}:null).filter(d=>d), backgroundColor:'#6b46c1', pointStyle:'triangle', pointRadius:8 }
+      datasets: [
+        { type:'bar', label:'Зона покупки',      data: buyMax,  backgroundColor:'rgba(72,187,120,0.6)', stack:'zones' },
+        { type:'bar', label:'',                   data: buyMin.map((v,i)=>buyMax[i]-v), backgroundColor:'rgba(72,187,120,0.3)', stack:'zones' },
+        { type:'bar', label:'Справедливая стоимость', data: fairMax, backgroundColor:'rgba(237,137,54,0.6)', stack:'zones' },
+        { type:'bar', label:'',                   data: fairMin.map((v,i)=>fairMax[i]-v), backgroundColor:'rgba(237,137,54,0.3)', stack:'zones' },
+        { type:'bar', label:'Зона фиксации',      data: sellMax, backgroundColor:'rgba(229,62,62,0.6)', stack:'zones' },
+        { type:'bar', label:'',                   data: sellMin.map((v,i)=>sellMax[i]-v), backgroundColor:'rgba(229,62,62,0.3)', stack:'zones' },
+        { type:'scatter', label:'Текущая цена', data: labels.map((_,i)=>({x:current[i], y:i})), backgroundColor:'#3182ce', pointRadius:6 },
+        { type:'scatter', label:'Средняя цена',  data: labels.map((_,i)=>avg[i]!=null?{x:avg[i], y:i}:null).filter(d=>d), backgroundColor:'#6b46c1', pointStyle:'triangle', pointRadius:8 }
       ]
     },
-    options:{
-      indexAxis:'y',
-      responsive:true,
-      maintainAspectRatio:false,
-      scales:{
-        x:{ title:{display:true,text:'Цена, ₽'}},
-        y:{ type:'category', title:{display:true,text:'Акции'}}
+    options: {
+      indexAxis: 'y',
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        x: {
+          type: 'logarithmic',
+          title: { display: true, text: 'Логарифмическая шкала цены, ₽' },
+          ticks: {
+            callback: value => value.toLocaleString()
+          }
+        },
+        y: {
+          type: 'category',
+          title: { display: true, text: 'Акции' }
+        }
       },
-      plugins:{
-        legend:{ position:'bottom' },
-        tooltip:{
-          callbacks:{
+      plugins: {
+        legend: { position: 'bottom' },
+        tooltip: {
+          callbacks: {
             title(items){ return portfolioData[items[0].dataIndex].name; },
             label(item){
-              const ds=item.dataset.label;
-              const idx=item.dataIndex;
-              if(ds==='Текущая цена') return `Текущая: ${current[idx].toFixed(2)} ₽`;
-              if(ds==='Средняя цена') return `Средняя: ${avg[idx].toFixed(2)} ₽`;
+              const idx = item.dataIndex;
+              const stock = portfolioData[idx];
+              if(item.dataset.label==='Текущая цена') return `Текущая: ${stock.currentPrice.toFixed(2)} ₽`;
+              if(item.dataset.label==='Средняя цена') return `Средняя: ${stock.avgPrice.toFixed(2)} ₽`;
               return null;
             }
           }
@@ -103,6 +113,8 @@ function renderChart(){
     }
   });
 }
+
+
 
 async function refreshPrices(){
   try{

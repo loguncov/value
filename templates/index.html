@@ -1,0 +1,67 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>📊 Зоны стоимости акций</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="header">
+    <h1>📊 Зоны стоимости акций</h1>
+    <p>Интерактивная система анализа инвестиционных зон</p>
+  </div>
+
+  <div class="controls">
+    <div>
+      <button class="btn" id="refreshBtn">🔄 Обновить цены</button>
+      <button class="btn" id="saveBtn">💾 Сохранить данные</button>
+      <button class="btn" id="loadJsonBtn">📁 Загрузить данные</button>
+    </div>
+    <div class="last-update" id="lastUpdate">Последнее обновление: —</div>
+  </div>
+
+  <div class="content">
+    <div class="section">
+      <div class="section-header">📋 Таблица зон стоимости</div>
+      <div class="table-container">
+        <table>
+          <thead>
+            <tr>
+              <th>Тикер</th>
+              <th>Название</th>
+              <th>Цена, ₽</th>
+              <th>Средняя цена<br />(вручную)</th>
+              <th>Зона покупки</th>
+              <th>Справедливо</th>
+              <th>Фиксация</th>
+              <th>Зона</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">📈 График зон стоимости</div>
+      <div class="chart-container">
+        <div class="chart-title">Зоны стоимости, текущие и средние цены</div>
+        <div class="chart-legend">
+          <div class="legend-item"><div class="legend-color buy"></div><span>Зона покупки</span></div>
+          <div class="legend-item"><div class="legend-color fair"></div><span>Справедливая стоимость</span></div>
+          <div class="legend-item"><div class="legend-color sell"></div><span>Зона фиксации</span></div>
+          <div class="legend-item"><div class="legend-color current"></div><span>Текущая цена</span></div>
+          <div class="legend-item"><div class="legend-color avg"></div><span>Средняя цена</span></div>
+        </div>
+        <div class="chart-area"><canvas id="zonesChart"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <input type="file" id="fileJson" accept=".json" style="display:none" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
